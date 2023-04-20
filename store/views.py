@@ -14,4 +14,4 @@ class ProductList(generic.ListView):
     context_object_name = 'products'
 
     def get_queryset(self):
-        return Product.objects.filter(quantity__gt=0)
+        return Product.objects.available()
