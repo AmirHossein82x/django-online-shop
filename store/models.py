@@ -44,3 +44,6 @@ class Product(models.Model):
             return int(self.price * (1 - self.promotion.discount))
         return self.price
 
+    def __str__(self):
+        return self.title
+

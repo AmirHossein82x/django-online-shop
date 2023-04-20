@@ -1,4 +1,6 @@
 from django.contrib import admin
+from django.contrib.admin.widgets import FilteredSelectMultiple
+from django.db import models
 from .models import Product, Category, Promotion
 
 
@@ -8,11 +10,13 @@ from .models import Product, Category, Promotion
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
     list_display = ('title',)
+    search_fields = ['title__istartswith']
+
 
 
 @admin.register(Promotion)
 class PromotionAdmin(admin.ModelAdmin):
-    list_display = ('discount', )
+    list_display = ('discount',)
 
 
 @admin.register(Product)
@@ -21,8 +25,13 @@ class ProductAdmin(admin.ModelAdmin):
     list_editable = ('quantity',)
     list_filter = ('category',)
     list_per_page = 10
+    search_fields = ['title__istartswith']
+    autocomplete_fields = ('category',)
     prepopulated_fields = {
         'slug': ('title',)
+    }
+    formfield_overrides = {
+        models.ManyToManyField: {'widget': FilteredSelectMultiple('verbose name', False)}
     }
 
     def get_category(self, product):
