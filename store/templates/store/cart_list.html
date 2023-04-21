@@ -37,10 +37,10 @@
                                             <tbody>
                                             {% for item in cart %}
                                                 <tr>
-                                                    <td class="product-remove text-left"><a href=""><i
+                                                    <td class="product-remove text-left"><a href="{% url 'cart-del-product' item.obj.pk %}"><i
                                                             class="flaticon flaticon-cross"></i></a></td>
                                                     <td class="product-thumbnail text-left">
-                                                        <img src="assets/img/products/prod-10-70x88.jpg"
+                                                        <img src="{{ item.obj.image.url }}"
                                                              alt="Product Thumnail">
                                                     </td>
                                                     <td class="product-name wide-column">
@@ -71,11 +71,13 @@
                                     </div>
                                 </div>
                             </div>
+                    {% if cart|length != 0 %}
                             <div class="row no-gutters border-top pt--20 mt--20">
                                 <div class="col-sm-6 text-sm-right">
                                     <a href="{% url 'clear-cart' %}"><button type="submit" class="cart-form__btn">خالی کردن سبد خرید</button></a>
                                 </div>
                             </div>
+                    {% endif %}
 
                     </div>
                     <div class="col-lg-4">

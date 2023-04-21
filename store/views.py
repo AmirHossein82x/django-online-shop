@@ -56,3 +56,12 @@ def clear_cart(request):
     cart.clear()
     return redirect('cart-list')
 
+
+def remove_from_cart(request, pk):
+    cart = Cart(request)
+    product = get_object_or_404(Product, pk=pk)
+    cart.remove_product(product=product)
+    return redirect('cart-list')
+
+
+
