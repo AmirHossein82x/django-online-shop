@@ -32,8 +32,10 @@
                             </p>
                             <div class="my-5 py-5 product-price-wrapper mb--25">
                                 <span class="money text-success">{{ product.final_price }} تومان</span>
-                                <span class="price-separator">-</span>
-                                <span class="money old-price text-danger">{{ product.final_price }} تومان</span>
+                                {% if product.promotion %}
+                                    <span class="price-separator">-</span>
+                                    <span class="money old-price text-danger">{{ product.price }} تومان</span>
+                                {% endif %}
                             </div>
                             <div class="product-action d-flex align-items-sm-center align-content-center mb--30">
                                 <div class="quantity-wrapper d-flex justify-content-start">
