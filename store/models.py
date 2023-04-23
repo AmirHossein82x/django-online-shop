@@ -56,3 +56,18 @@ class Profile(models.Model):
     address = models.TextField(null=True, blank=True)
     phone_number = PhoneNumberField(region="IR", null=True, blank=True)
 
+
+class Order(models.Model):
+    profile = models.ForeignKey(Profile, null=True, on_delete=models.SET_NULL)
+    note = models.CharField(max_length=500)
+    total_price = models.PositiveIntegerField()
+    created = models.DateTimeField(auto_now_add=True)
+
+
+class OrderItem(models.Model):
+    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, null=True,  on_delete=models.SET_NULL)
+    quantity = models.PositiveIntegerField()
+    price = models.PositiveIntegerField()
+
+

@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.admin.widgets import FilteredSelectMultiple
 from django.db import models
-from .models import Product, Category, Promotion, Profile
+from .models import Product, Category, Promotion, Profile, OrderItem, Order
 
 
 # Register your models here.
@@ -55,3 +55,17 @@ class ProfileAdmin(admin.ModelAdmin):
 
     def get_queryset(self, request):
         return super().get_queryset(request).select_related('user')
+
+
+class OrderItemInline(admin.TabularInline):
+    model = OrderItem
+    fields = ('product', 'quantity', 'price')
+
+
+@admin.register(Order)
+class OrderAdmin(admin.ModelAdmin):
+    list_display = ('username', 'created')
+    inlines = [OrderItemInline]
+
+    def username(self, order):
+        return order.profile.user.username

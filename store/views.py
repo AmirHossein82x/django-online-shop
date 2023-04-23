@@ -4,7 +4,7 @@ from django.shortcuts import redirect
 from django.views import generic
 from .models import Product
 from .cart import Cart
-from .forms import AddProductToCartForm
+from .forms import AddProductToCartForm, OrderCreateForm
 
 # Create your views here.
 
@@ -62,6 +62,15 @@ def remove_from_cart(request, pk):
     product = get_object_or_404(Product, pk=pk)
     cart.remove_product(product=product)
     return redirect('cart-list')
+
+
+def create_order(request):
+    if request.method == 'POST':
+        form = OrderCreateForm(request.POST, request=request)
+        if form.is_valid():
+            form.save()
+    form = OrderCreateForm()
+    return render(request, 'store/checkout.html', context={'form': form})
 
 
 
