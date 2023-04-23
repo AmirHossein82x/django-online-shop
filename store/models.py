@@ -1,4 +1,7 @@
 from django.db import models
+from django.conf import settings
+
+from phonenumber_field.modelfields import PhoneNumberField
 
 # Create your models here.
 
@@ -46,4 +49,10 @@ class Product(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class Profile(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    address = models.TextField(null=True, blank=True)
+    phone_number = PhoneNumberField(region="IR", null=True, blank=True)
 
