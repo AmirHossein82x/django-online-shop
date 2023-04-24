@@ -56,6 +56,9 @@ class Profile(models.Model):
     address = models.TextField(null=True, blank=True)
     phone_number = PhoneNumberField(region="IR", null=True, blank=True)
 
+    def __str__(self):
+        return self.user.username
+
 
 class Order(models.Model):
     profile = models.ForeignKey(Profile, null=True, on_delete=models.SET_NULL)

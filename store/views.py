@@ -2,9 +2,10 @@ from django.shortcuts import render, get_object_or_404
 from django.views.generic import TemplateView
 from django.shortcuts import redirect
 from django.views import generic
-from .models import Product
+from .models import Product, Order, Profile
 from .cart import Cart
 from .forms import AddProductToCartForm, OrderCreateForm
+
 
 # Create your views here.
 
@@ -65,12 +66,24 @@ def remove_from_cart(request, pk):
 
 
 def create_order(request):
+    cart = Cart(request)
+    if len(cart) == 0:
+        return redirect('product-list')
     if request.method == 'POST':
         form = OrderCreateForm(request.POST, request=request)
         if form.is_valid():
             form.save()
-    form = OrderCreateForm()
+    elif request.method == "GET":
+        if Order.objects.filter(profile__user=request.user).exists():
+            profile = get_object_or_404(Profile, user=request.user)
+            form = OrderCreateForm(initial=
+            {
+                'first_name': request.user.first_name,
+                'last_name': request.user.last_name,
+                'email': request.user.email,
+                'phone_number': profile.phone_number,
+                'address': profile.address,
+            })
+        else:
+            form = OrderCreateForm()
     return render(request, 'store/checkout.html', context={'form': form})
-
-
-

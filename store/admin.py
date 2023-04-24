@@ -60,6 +60,7 @@ class ProfileAdmin(admin.ModelAdmin):
 class OrderItemInline(admin.TabularInline):
     model = OrderItem
     fields = ('product', 'quantity', 'price')
+    extra = 0
 
 
 @admin.register(Order)
