@@ -14,16 +14,27 @@ class AddProductToCartForm(forms.Form):
 
 
 class OrderCreateForm(forms.Form):
-    def __init__(self, *args, **kwargs):
-        self.request = kwargs.pop('request', None)
-        super().__init__(*args, **kwargs)
-
     first_name = forms.CharField(max_length=255)
     last_name = forms.CharField(max_length=255)
-    email = forms.EmailField(disabled=True)
+    email = forms.EmailField()
     phone_number = PhoneNumberField(region='IR')
     address = forms.CharField(widget=forms.Textarea, max_length=1000)
     note = forms.CharField(max_length=500)
+
+    def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop('request', None)
+        super().__init__(*args, **kwargs)
+        self.fields['email'].disabled = True
+        self.fields['email'].required = False
+        if Order.objects.filter(profile__user=self.request.user).exists():
+            self.fields['first_name'].disabled = True
+            self.fields['first_name'].required = False
+            self.fields['last_name'].disabled = True
+            self.fields['last_name'].required = False
+            self.fields['phone_number'].disabled = True
+            self.fields['phone_number'].required = False
+            self.fields['address'].disabled = True
+            self.fields['address'].required = False
 
     def save(self):
         with transaction.atomic():
@@ -47,3 +58,29 @@ class OrderCreateForm(forms.Form):
             ]
             OrderItem.objects.bulk_create(order_items)
             cart.clear()
+
+
+class ProfileForm(forms.Form):
+    email = forms.EmailField(disabled=True)
+    first_name = forms.CharField(max_length=255)
+    last_name = forms.CharField(max_length=255)
+    phone_number = PhoneNumberField(region='IR')
+    address = forms.CharField(widget=forms.Textarea, max_length=1000)
+
+    def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop('request', None)
+        super().__init__(*args, **kwargs)
+        self.fields['email'].disabled = True
+        self.fields['email'].required = False
+
+    def save(self):
+        cleaned_data = self.cleaned_data
+        CustomUser.objects.filter(pk=self.request.user.id).update(
+            first_name=cleaned_data['first_name'],
+            last_name=cleaned_data['last_name'])
+
+        Profile.objects.filter(user=self.request.user).update(
+            phone_number=cleaned_data['phone_number'],
+            address=cleaned_data['address'])
+
+

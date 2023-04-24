@@ -65,6 +65,7 @@ class Order(models.Model):
     note = models.CharField(max_length=500)
     total_price = models.PositiveIntegerField()
     created = models.DateTimeField(auto_now_add=True)
+    is_send = models.BooleanField(default=False)
 
 
 class OrderItem(models.Model):

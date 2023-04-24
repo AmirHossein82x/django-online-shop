@@ -30,6 +30,8 @@
                                     {% csrf_token %}
                                     {{ form.as_p }}
                                     <button type="submit">submit</button>
+                                     for change your info click here <a
+                                        href="{% url 'profile' %}">edit_profile</a>
                                 </form>
 {#                                <form action="#" class="form form--checkout">#}
 {#                                    <div class="form-row mb--20">#}

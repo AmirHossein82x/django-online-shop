@@ -4,7 +4,7 @@ from django.shortcuts import redirect
 from django.views import generic
 from .models import Product, Order, Profile
 from .cart import Cart
-from .forms import AddProductToCartForm, OrderCreateForm
+from .forms import AddProductToCartForm, OrderCreateForm, ProfileForm
 
 
 # Create your views here.
@@ -83,7 +83,28 @@ def create_order(request):
                 'email': request.user.email,
                 'phone_number': profile.phone_number,
                 'address': profile.address,
-            })
+            },
+                request=request
+        )
         else:
-            form = OrderCreateForm()
+            form = OrderCreateForm(request=request)
     return render(request, 'store/checkout.html', context={'form': form})
+
+
+def update_profile(request):
+    profile = get_object_or_404(Profile, user=request.user)
+    if request.method == "GET":
+        form = ProfileForm(request=request, initial={
+            'first_name': request.user.first_name,
+            'last_name': request.user.last_name,
+            'email': request.user.email,
+            'phone_number': profile.phone_number,
+            'address': profile.address,
+        })
+    else:
+        form = ProfileForm(request.POST, request=request)
+        if form.is_valid():
+            form.save()
+            return redirect('product-list')
+
+    return render(request, 'store/profile_update.html',  context={'form': form})
