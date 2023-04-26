@@ -1,6 +1,8 @@
 from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
 from django.conf import settings
+from django.urls import reverse
+
 from like.models import Like
 
 from phonenumber_field.modelfields import PhoneNumberField
@@ -49,6 +51,9 @@ class Product(models.Model):
         if self.promotion:
             return int(self.price * (1 - self.promotion.discount))
         return self.price
+
+    def get_absolute_url(self):
+        return reverse('product-detail', args=[self.slug])
 
     def __str__(self):
         return self.title

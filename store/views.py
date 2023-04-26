@@ -1,5 +1,7 @@
+from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
 from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404
+from django.template.defaultfilters import slugify
 from django.views.generic import TemplateView
 from django.shortcuts import redirect
 from django.views import generic
@@ -7,7 +9,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .models import Product, Order, Profile, OrderItem
 from .cart import Cart
-from .forms import AddProductToCartForm, OrderCreateForm, ProfileForm
+from .forms import AddProductToCartForm, OrderCreateForm, ProfileForm, AddProductForm
 from like.models import Like
 
 
@@ -97,7 +99,6 @@ def create_order(request):
         form = OrderCreateForm(request.POST, request=request)
         if form.is_valid():
             form.save()
-            messages.success(request, "your order has been ordered")
             return redirect('product-list')
     elif request.method == "GET":
         if Order.objects.filter(profile__user=request.user).exists():
@@ -145,19 +146,39 @@ def like_product(request, pk):
     else:
         product.likes.create(user=request.user)
         messages.success(request, 'product liked')
+    for i in range(10):
+        print(request.get_full_path())
     return redirect('product-list')
 
 
+@login_required
 def product_liked_list(request):
     likes = Like.objects.filter(user=request.user).values('object_id')
     products = Product.objects.available().filter(id__in=likes)
     return render(request, template_name='store/product_liked.html', context={'products': products})
 
 
-class OrderView(generic.ListView):
+class OrderView(LoginRequiredMixin, generic.ListView):
     context_object_name = 'orders'
     template_name = 'store/order.html'
 
     def get_queryset(self):
         return Order.objects.filter(profile__user=self.request.user)
+
+
+class ProductCreate(UserPassesTestMixin, generic.CreateView):
+    model = Product
+    template_name = 'store/product_add.html'
+    form_class = AddProductForm
+
+    def test_func(self):
+        return self.request.user.is_superuser
+
+    def form_valid(self, form):
+        if form.is_valid():
+            product = form.save(commit=False)
+            product.slug = slugify(product.title)
+            product.save()
+            return super().form_valid(form)
+
 

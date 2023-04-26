@@ -1,9 +1,10 @@
 from django import forms
 from django.db import transaction
-from django.shortcuts import redirect
+from django.shortcuts import redirect, get_object_or_404
 from phonenumber_field.formfields import PhoneNumberField
+from django.contrib import messages
 
-from .models import Order, OrderItem, Profile
+from .models import Order, OrderItem, Profile, Product
 from .cart import Cart
 from core.models import CustomUser
 
@@ -39,6 +40,14 @@ class OrderCreateForm(forms.Form):
     def save(self):
         with transaction.atomic():
             cart = Cart(self.request)
+            try:
+                for item in cart:
+                    product = get_object_or_404(Product, pk=item.get('obj').pk)
+                    product.quantity -= item.get('quantity')
+                    product.save()
+            except:
+                messages.error(self.request, 'this quantity is not available')
+                return redirect('product-list')
             cleaned_data = self.cleaned_data
             if not Order.objects.filter(profile__user=self.request.user).exists():
                 CustomUser.objects.filter(id=self.request.user.id).update(first_name=cleaned_data['first_name'],
@@ -58,6 +67,7 @@ class OrderCreateForm(forms.Form):
             ]
             OrderItem.objects.bulk_create(order_items)
             cart.clear()
+            messages.success(self.request, "your order has been ordered")
 
 
 class ProfileForm(forms.Form):
@@ -84,3 +94,7 @@ class ProfileForm(forms.Form):
             address=cleaned_data['address'])
 
 
+class AddProductForm(forms.ModelForm):
+    class Meta:
+        model = Product
+        fields = ('category', 'title', 'description', 'quantity', 'price', 'promotion', 'image')
