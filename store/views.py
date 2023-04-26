@@ -1,3 +1,4 @@
+from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404
 from django.views.generic import TemplateView
 from django.shortcuts import redirect
@@ -7,6 +8,7 @@ from django.contrib import messages
 from .models import Product, Order, Profile
 from .cart import Cart
 from .forms import AddProductToCartForm, OrderCreateForm, ProfileForm
+from like.models import Like
 
 
 # Create your views here.
@@ -38,6 +40,11 @@ class ProductDetail(generic.DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['add_product_to_cart_form'] = AddProductToCartForm()
+        product = self.get_object()
+        if Like.objects.filter(user=self.request.user, object_id=product.pk).exists():
+            context['like'] = 'unlike'
+        else:
+            context['like'] = 'like'
         return context
 
 
@@ -128,3 +135,20 @@ def update_profile(request):
             return redirect('product-list')
 
     return render(request, 'store/profile_update.html',  context={'form': form})
+
+
+def like_product(request, pk):
+    product = get_object_or_404(Product, pk=pk)
+    if Like.objects.filter(user=request.user, object_id=pk):
+        Like.objects.filter(user=request.user, object_id=product.pk).delete()
+        messages.error(request, 'product unliked')
+    else:
+        product.likes.create(user=request.user)
+        messages.success(request, 'product liked')
+    return redirect('product-list')
+
+
+def product_liked_list(request):
+    likes = Like.objects.filter(user=request.user).values('object_id')
+    products = Product.objects.available().filter(id__in=likes)
+    return render(request, template_name='store/product_liked.html', context={'products': products})

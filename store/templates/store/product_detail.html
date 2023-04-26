@@ -52,6 +52,7 @@
                                                 اضافه به سبد خرید
                                             </button>
                                 </form>
+
                             </div>
                         </div>
                     </div>
@@ -59,11 +60,13 @@
                         <p><span class="m-0">دسته بندی ها:</span>
                             {% for category in product.category.all %}
                                 <a href="{% url 'product-list' %}?category__title={{ category.title }}">{{ category.title }}</a>
+
                                 ,
 
                             {% endfor %}
                         </p>
                     </div>
+                   <a href="{% url 'like-product' product.pk %}"><button class="btn btn-danger">{{ like }}</button></a>
                 </div>
             </div>
         </div>

@@ -1,5 +1,7 @@
+from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
 from django.conf import settings
+from like.models import Like
 
 from phonenumber_field.modelfields import PhoneNumberField
 
@@ -38,6 +40,7 @@ class Product(models.Model):
     price = models.PositiveIntegerField()
     promotion = models.ForeignKey(Promotion, on_delete=models.CASCADE, null=True, blank=True, related_name='products')
     image = models.ImageField(upload_to='product', null=True)
+    likes = GenericRelation(Like)
     date_time_created = models.DateTimeField(auto_now_add=True)
     date_time_modified = models.DateTimeField(auto_now=True)
     objects = ProductManager()

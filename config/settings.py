@@ -51,6 +51,7 @@ INSTALLED_APPS = [
 
     'core.apps.CoreConfig',
     'store.apps.StoreConfig',
+    'like.apps.LikeConfig',
 ]
 
 SITE_ID = 1
