@@ -5,7 +5,7 @@ from django.shortcuts import redirect
 from django.views import generic
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from .models import Product, Order, Profile
+from .models import Product, Order, Profile, OrderItem
 from .cart import Cart
 from .forms import AddProductToCartForm, OrderCreateForm, ProfileForm
 from like.models import Like
@@ -152,3 +152,12 @@ def product_liked_list(request):
     likes = Like.objects.filter(user=request.user).values('object_id')
     products = Product.objects.available().filter(id__in=likes)
     return render(request, template_name='store/product_liked.html', context={'products': products})
+
+
+class OrderView(generic.ListView):
+    context_object_name = 'orders'
+    template_name = 'store/order.html'
+
+    def get_queryset(self):
+        return Order.objects.filter(profile__user=self.request.user)
+

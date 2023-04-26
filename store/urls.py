@@ -13,5 +13,6 @@ urlpatterns = [
     path('profile/', views.update_profile, name='profile'),
     path('like/<int:pk>', views.like_product, name='like-product'),
     path('like/products/', views.product_liked_list, name='product-liked-list'),
+    path('orders/', views.OrderView.as_view(), name='orders'),
 
 ]

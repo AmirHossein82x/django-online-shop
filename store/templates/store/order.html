@@ -1,0 +1,16 @@
+{% extends '_base.html' %}
+{% load static %}
+{% block content %}
+ {% for order in orders %}
+     <p>{{ order.is_send }}</p>
+     <ul>
+     {% for item in order.items.all %}
+         <li> {{ item.product.title }} : {{ item.quantity }} </li>
+     {% endfor %}
+     </ul>
+     <h1>-------------------------------------------------------------</h1>
+
+     {% empty %} <h4>you have no order!</h4>
+ {% endfor %}
+
+{% endblock %}
