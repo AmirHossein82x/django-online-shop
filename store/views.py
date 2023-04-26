@@ -19,6 +19,7 @@ from .forms import AddProductToCartForm, OrderCreateForm, ProfileForm
 class ProductList(generic.ListView):
     template_name = 'store/product_list.html'
     context_object_name = 'products'
+    paginate_by = 4
 
     def get_queryset(self):
         if query_param := self.request.GET.get('category__title'):
@@ -52,6 +53,14 @@ def add_product_to_cart(request, pk):
         cart = Cart(request)
         cart.add_product(product, quantity)
         messages.success(request, f"{quantity} {product.title} added to the cart")
+    return redirect('cart-list')
+
+
+def add_product_to_cart_from_product_list_page(request, pk):
+    product = get_object_or_404(Product, pk=pk)
+    cart = Cart(request)
+    cart.add_product(product=product, quantity=1)
+    messages.success(request, f"{1} {product.title} added to the cart")
     return redirect('cart-list')
 
 
