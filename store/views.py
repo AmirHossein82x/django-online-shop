@@ -2,6 +2,8 @@ from django.shortcuts import render, get_object_or_404
 from django.views.generic import TemplateView
 from django.shortcuts import redirect
 from django.views import generic
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 from .models import Product, Order, Profile
 from .cart import Cart
 from .forms import AddProductToCartForm, OrderCreateForm, ProfileForm
@@ -49,12 +51,14 @@ def add_product_to_cart(request, pk):
         product = get_object_or_404(Product, pk=pk)
         cart = Cart(request)
         cart.add_product(product, quantity)
+        messages.success(request, f"{quantity} {product.title} added to the cart")
     return redirect('cart-list')
 
 
 def clear_cart(request):
     cart = Cart(request)
     cart.clear()
+    messages.error(request, 'you cleared the cart')    
     return redirect('cart-list')
 
 
@@ -62,17 +66,23 @@ def remove_from_cart(request, pk):
     cart = Cart(request)
     product = get_object_or_404(Product, pk=pk)
     cart.remove_product(product=product)
+    messages.error(request, f"{product.title} has been removed")
     return redirect('cart-list')
 
 
+@login_required
 def create_order(request):
     cart = Cart(request)
     if len(cart) == 0:
+        messages.warning(request, 'your cart is empty please choose some products')
         return redirect('product-list')
+
     if request.method == 'POST':
         form = OrderCreateForm(request.POST, request=request)
         if form.is_valid():
             form.save()
+            messages.success(request, "your order has been ordered")
+            return redirect('product-list')
     elif request.method == "GET":
         if Order.objects.filter(profile__user=request.user).exists():
             profile = get_object_or_404(Profile, user=request.user)
@@ -87,10 +97,11 @@ def create_order(request):
                 request=request
         )
         else:
-            form = OrderCreateForm(request=request)
+            form = OrderCreateForm(request=request, initial={'email': request.user.email})
     return render(request, 'store/checkout.html', context={'form': form})
 
 
+@login_required
 def update_profile(request):
     profile = get_object_or_404(Profile, user=request.user)
     if request.method == "GET":
