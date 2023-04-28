@@ -1,0 +1,8 @@
+{% extends '_base.html' %}
+{% block content %}
+    <form action="" method="post">
+    {% csrf_token %}
+        <h1>are you sure you want to delete your comment? </h1>
+    <button class="btn-danger" type="submit">delete</button>
+    </form>
+{% endblock %}

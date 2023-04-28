@@ -4,7 +4,7 @@ from django.shortcuts import redirect, get_object_or_404
 from phonenumber_field.formfields import PhoneNumberField
 from django.contrib import messages
 
-from .models import Order, OrderItem, Profile, Product
+from .models import Order, OrderItem, Profile, Product, Comment
 from .cart import Cart
 from core.models import CustomUser
 
@@ -98,3 +98,9 @@ class AddProductForm(forms.ModelForm):
     class Meta:
         model = Product
         fields = ('category', 'title', 'description', 'quantity', 'price', 'promotion', 'image')
+
+
+class CommentCreateForm(forms.ModelForm):
+    class Meta:
+        model = Comment
+        fields = ('text',)

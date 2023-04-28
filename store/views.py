@@ -1,15 +1,19 @@
 from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
-from django.http import HttpResponse
+from django.core.mail import send_mail
+from django.http import HttpResponse, BadHeaderError
 from django.shortcuts import render, get_object_or_404
 from django.template.defaultfilters import slugify
+from django.urls import reverse_lazy
 from django.views.generic import TemplateView
 from django.shortcuts import redirect
 from django.views import generic
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from .models import Product, Order, Profile, OrderItem
+
+from config import settings
+from .models import Product, Order, Profile, OrderItem, Comment, Category
 from .cart import Cart
-from .forms import AddProductToCartForm, OrderCreateForm, ProfileForm, AddProductForm
+from .forms import AddProductToCartForm, OrderCreateForm, ProfileForm, AddProductForm, CommentCreateForm
 from like.models import Like
 
 
@@ -21,14 +25,10 @@ from like.models import Like
 
 
 class ProductList(generic.ListView):
+    queryset = Product.objects.available().order_by('-date_time_created')
     template_name = 'store/product_list.html'
     context_object_name = 'products'
     paginate_by = 4
-
-    def get_queryset(self):
-        if query_param := self.request.GET.get('category__title'):
-            return Product.objects.available().filter(category__title__exact=query_param)
-        return Product.objects.available()
 
 
 class ProductDetail(generic.DetailView):
@@ -48,6 +48,16 @@ class ProductDetail(generic.DetailView):
         else:
             context['like'] = 'like'
         return context
+
+
+class ProductListPerCategory(generic.ListView):
+    template_name = 'store/category.html'
+    context_object_name = 'products'
+    paginate_by = 4
+
+    def get_queryset(self):
+        category = get_object_or_404(Category, title=self.kwargs.get('title'))
+        return category.product_set.available().order_by('-date_time_created')
 
 
 class CartView(TemplateView):
@@ -138,7 +148,8 @@ def update_profile(request):
     return render(request, 'store/profile_update.html',  context={'form': form})
 
 
-def like_product(request, pk):
+@login_required
+def like_product(request, pk, ok):
     product = get_object_or_404(Product, pk=pk)
     if Like.objects.filter(user=request.user, object_id=pk):
         Like.objects.filter(user=request.user, object_id=product.pk).delete()
@@ -146,9 +157,11 @@ def like_product(request, pk):
     else:
         product.likes.create(user=request.user)
         messages.success(request, 'product liked')
-    for i in range(10):
-        print(request.get_full_path())
-    return redirect('product-list')
+
+    if ok == 'lists':
+        return redirect('product-list')
+    else:
+        return redirect('product-detail', slug=product.slug)
 
 
 @login_required
@@ -180,5 +193,33 @@ class ProductCreate(UserPassesTestMixin, generic.CreateView):
             product.slug = slugify(product.title)
             product.save()
             return super().form_valid(form)
+
+
+class CommentCreate(LoginRequiredMixin, generic.CreateView):
+    model = Comment
+    form_class = CommentCreateForm
+    template_name = 'store/product_detail.html'
+
+    def form_valid(self, form):
+        comment = form.save(commit=False)
+        comment.product = get_object_or_404(Product, pk=self.kwargs['pk'])
+        comment.user = self.request.user
+        comment.save()
+        try:
+            send_mail('comment created', f"new comment is added for {comment.product.title} please check the content so it can be display", "amirhosseing983@gmail.com", [f"{settings.ADMIN_EMAIL}"])
+        except BadHeaderError:
+            return HttpResponse("Invalid header found.")
+        return super().form_valid(form)
+
+
+class CommentDelete(UserPassesTestMixin, LoginRequiredMixin, generic.DeleteView):
+    model = Comment
+    template_name = 'store/comment_delete_confrim.html'
+
+    def test_func(self):
+        return bool(self.get_object().user == self.request.user)
+
+    def get_success_url(self):
+        return reverse_lazy('product-detail', args=[self.kwargs['product_slug']])
 
 

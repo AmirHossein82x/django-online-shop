@@ -1,0 +1,9 @@
+{% extends '_base.html' %}
+{% block content %}
+    <h1>welcome to this site</h1>
+    <a href="{% url 'account_login' %}">login</a> | <a href="{% url 'account_signup' %}">signup</a>
+    {% if user.is_authenticated %}
+        <a href="{% url 'account_logout' %}">logout</a>
+    
+    {% endif %} 
+{% endblock %}

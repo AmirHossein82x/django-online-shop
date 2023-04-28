@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.admin.widgets import FilteredSelectMultiple
 from django.contrib.contenttypes.admin import GenericStackedInline
 from django.db import models
-from .models import Product, Category, Promotion, Profile, OrderItem, Order
+from .models import Product, Category, Promotion, Profile, OrderItem, Order, Comment
 from like.models import Like
 
 
@@ -42,6 +42,11 @@ class LikeInline(GenericStackedInline):
     extra = 0
 
 
+class CommentInline(admin.TabularInline):
+    model = Comment
+    extra = 0
+
+
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
     list_display = ('title', 'get_category', 'quantity', 'price', 'discount', 'final_price')
@@ -50,7 +55,7 @@ class ProductAdmin(admin.ModelAdmin):
     list_per_page = 10
     search_fields = ['title__istartswith']
     autocomplete_fields = ('category',)
-    inlines = [LikeInline]
+    inlines = [LikeInline, CommentInline]
 
     prepopulated_fields = {
         'slug': ('title',)

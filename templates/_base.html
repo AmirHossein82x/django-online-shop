@@ -87,7 +87,7 @@
                                             {% for category in categories %}
                                                 <li>
                                                     <a class="text-right"
-                                                       href="{% url 'product-list' %}?category__title={{ category.title }}">{{ category.title }}</a>
+                                                       href="{% url 'category' category.title %}">{{ category.title }}</a>
                                                 </li>
                                             {% endfor %}
 
@@ -102,7 +102,7 @@
                                     </li>
                                 {% endif %}
                                     <li class="mainmenu__item">
-                                        <a href="contact-us.html" class="mainmenu__link">
+                                        <a href="{% url 'home' %}" class="mainmenu__link">
                                             <span class="mm-text">تماس با ما</span>
                                         </a>
                                     </li>
@@ -142,11 +142,11 @@
                                     </li>
                                 </ul>
                             </li>
-                            <li class="header-toolbar__item">
-                                <a href="#searchForm" class="header-toolbar__btn toolbar-btn">
-                                    <i class="flaticon flaticon-search"></i>
-                                </a>
-                            </li>
+{#                            <li class="header-toolbar__item">#}
+{#                                <a href="#searchForm" class="header-toolbar__btn toolbar-btn">#}
+{#                                    <i class="flaticon flaticon-search"></i>#}
+{#                                </a>#}
+{#                            </li>#}
                         </ul>
                     </div>
                 </div>

@@ -59,6 +59,23 @@ class Product(models.Model):
         return self.title
 
 
+class CommentManager(models.Manager):
+    def can_display(self):
+        return self.filter(is_show=True)
+
+
+class Comment(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='comments')
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='comments')
+    text = models.TextField()
+    date_time_created = models.DateTimeField(auto_now_add=True)
+    is_show = models.BooleanField(default=False)
+    objects = CommentManager()
+
+    def get_absolute_url(self):
+        return reverse('product-detail', args=[self.product.slug])
+
+
 class Profile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     address = models.TextField(null=True, blank=True)
