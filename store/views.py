@@ -109,6 +109,12 @@ def create_order(request):
         form = OrderCreateForm(request.POST, request=request)
         if form.is_valid():
             form.save()
+            try:
+                send_mail('order created',
+                          f"you have new order please check the admin panel",
+                          "amirhosseing983@gmail.com", [f"{settings.ADMIN_EMAIL}"])
+            except BadHeaderError:
+                return HttpResponse("Invalid header found.")
             return redirect('product-list')
     elif request.method == "GET":
         if Order.objects.filter(profile__user=request.user).exists():
@@ -149,7 +155,7 @@ def update_profile(request):
 
 
 @login_required
-def like_product(request, pk, ok):
+def like_product(request, pk):
     product = get_object_or_404(Product, pk=pk)
     if Like.objects.filter(user=request.user, object_id=pk):
         Like.objects.filter(user=request.user, object_id=product.pk).delete()
@@ -158,10 +164,7 @@ def like_product(request, pk, ok):
         product.likes.create(user=request.user)
         messages.success(request, 'product liked')
 
-    if ok == 'lists':
-        return redirect('product-list')
-    else:
-        return redirect('product-detail', slug=product.slug)
+    return redirect('product-detail', slug=product.slug)
 
 
 @login_required

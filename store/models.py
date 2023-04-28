@@ -16,7 +16,7 @@ class ProductManager(models.Manager):
 
 
 class Category(models.Model):
-    title = models.CharField(max_length=255)
+    title = models.CharField(max_length=255, unique=True)
     date_time_created = models.DateTimeField(auto_now_add=True)
     date_time_modified = models.DateTimeField(auto_now=True)
 
