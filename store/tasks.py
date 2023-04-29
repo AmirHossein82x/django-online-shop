@@ -10,7 +10,7 @@ from datetime import datetime, timedelta
 @shared_task
 def delete_disable_comments():
     time_of_now = datetime.now()
-    one_week_ago = time_of_now - timedelta(seconds=4)
+    one_week_ago = time_of_now - timedelta(days=2)
     comments = Comment.objects.filter(date_time_created__lt=one_week_ago)
     for comment in comments:
         try:
