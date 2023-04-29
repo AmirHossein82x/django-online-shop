@@ -1,5 +1,7 @@
 {% extends '_base.html' %}
 {% load static %}
+{% load humanize %}
+{% load persian_numbers %}
 {% block content %}
     <!-- Main Content Wrapper Start -->
     <div class="main-content-wrapper container-fluid">
@@ -50,11 +52,11 @@
                                                             <a href="{% url 'product-detail' product.slug %}">{{ product.title }}</a>
                                                         </h3>
                                                         <div class="product-price-wrapper mb--30">
-                                                            <span class="money text-success">{{ product.final_price }} تومان</span>
+                                                            <span class="money text-success">{{ product.final_price| intcomma | trans_number }} تومان</span>
                                                             {% if product.promotion %}
                                                                 <span class="money-separator">-</span>
                                                                 <span class="old-price text-danger">
-                                                                <span class="money text-danger">{{ product.price }} تومان</span>
+                                                                <span class="money text-danger">{{ product.price| intcomma | trans_number }} تومان</span>
                                                             {% endif %}
                                                             </span>
                                                         </div>
@@ -76,17 +78,17 @@
                             <div class="pagination">
     <span class="step-links">
         {% if page_obj.has_previous %}
-            <a href="?page=1">&laquo; first</a>
-            <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+            <a href="?page=1">&laquo; اول</a>
+            <a href="?page={{ page_obj.previous_page_number }}">قبلی</a>
         {% endif %}
 
         <span class="current">
-            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+            صفحه {{ page_obj.number | intcomma | trans_number}} از {{ page_obj.paginator.num_pages | intcomma | trans_number }}.
         </span>
 
         {% if page_obj.has_next %}
-            <a href="?page={{ page_obj.next_page_number }}">next</a>
-            <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+            <a href="?page={{ page_obj.next_page_number }}">بعدی</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}">آخر &raquo;</a>
         {% endif %}
     </span>
                             </div>

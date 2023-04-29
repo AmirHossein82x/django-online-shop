@@ -1,5 +1,7 @@
 {% extends '_base.html' %}
 {% load static %}
+{% load persian_numbers %}
+{% load humanize %}
 {% block content %}
     <!-- Breadcrumb area Start -->
     <div class="breadcrumb-area bg-color ptb--90" data-bg-color="#f6f6f6">
@@ -33,10 +35,10 @@
                                 {{ product.description }}
                             </p>
                             <div class="my-5 py-5 product-price-wrapper mb--25">
-                                <span class="money text-success">{{ product.final_price }} تومان</span>
+                                <span class="money text-success">{{ product.final_price| intcomma | trans_number}} تومان</span>
                                 {% if product.promotion %}
                                     <span class="price-separator">-</span>
-                                    <span class="money old-price text-danger">{{ product.price }} تومان</span>
+                                    <span class="money old-price text-danger">{{ product.price | intcomma| trans_number }} تومان</span>
                                 {% endif %}
                             </div>
                             <div class="product-action d-flex align-items-sm-center align-content-center mb--30">

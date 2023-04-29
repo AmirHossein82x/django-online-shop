@@ -1,11 +1,14 @@
 {% extends '_base.html' %}
+{% load humanize %}
+{% load persian_numbers %}
 {% load static %}
 {% block content %}
  {% for order in orders %}
      <p>{{ order.is_send }}</p>
+     <p>قیمت : {{ order.total_price | intcomma | trans_number }}</p>
      <ul>
      {% for item in order.items.all %}
-         <li> {{ item.product.title }} : {{ item.quantity }} </li>
+         <li> {{ item.product.title }} : {{ item.quantity | intcomma | trans_number}} </li>
      {% endfor %}
      </ul>
      <h1>-------------------------------------------------------------</h1>

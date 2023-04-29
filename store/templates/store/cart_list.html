@@ -1,4 +1,6 @@
 {% extends '_base.html' %}
+{% load humanize %}
+{% load persian_numbers %}
 {% block content %}
     <!-- Breadcrumb area Start -->
     <div class="breadcrumb-area bg-color ptb--90" data-bg-color="#f6f6f6">
@@ -50,18 +52,19 @@
                                                     </td>
                                                     <td class="product-price">
                                                             <span class="product-price-wrapper">
-                                                                <span class="money">{{ item.obj.final_price }} تومان</span>
+                                                                <span class="money">{{ item.obj.final_price | intcomma | trans_number }} تومان</span>
                                                             </span>
                                                     </td>
                                                     <td class="product-quantity">
                                                         <div class="quantity">
-                                                            <input type="number" class="quantity-input" name="qty"
-                                                                   id="qty-1" value={{ item.quantity }} min="1">
+                                                            {{ item.quantity | intcomma | trans_number }}
+{#                                                            <input type="number" class="quantity-input" name="qty"#}
+{#                                                                   id="qty-1" value={{ item.quantity | trans_number}} min="1">#}
                                                         </div>
                                                     </td>
                                                     <td class="product-total-price">
                                                             <span class="product-price-wrapper">
-                                                                <span class="money">{{ item.price }} تومان</span>
+                                                                <span class="money">{{ item.price | intcomma | trans_number }} تومان</span>
                                                             </span>
                                                     </td>
                                                 </tr>
@@ -90,7 +93,7 @@
                                             <span>مجموع</span>
                                         </div>
                                         <div class="cart-calculator__item--value">
-                                            <span>{{ cart.total_price }} تومان</span>
+                                            <span>{{ cart.total_price | intcomma | trans_number }} تومان</span>
                                         </div>
                                     </div>
 

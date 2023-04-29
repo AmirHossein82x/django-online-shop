@@ -1,4 +1,6 @@
 {% load static %}
+{% load humanize %}
+{% load persian_numbers %}
 <!doctype html>
 <html class="no-js" lang=""><!--------Theme Shered by Codingyar.com--------->
 
@@ -120,7 +122,7 @@
                             <li class="header-toolbar__item mini-cart-item">
                                 <a href="#miniCart" class="header-toolbar__btn toolbar-btn mini-cart-btn">
                                     <i class="flaticon flaticon-shopping-cart"></i>
-                                    <sup class="mini-cart-count">{{ cart|length }}</sup>
+                                    <sup class="mini-cart-count">{{ cart|length| intcomma | trans_number }}</sup>
                                 </a>
                             </li>
                             <li class="header-toolbar__item user-info">

@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     "phonenumber_field",
+    'django.contrib.humanize',
 
     'core.apps.CoreConfig',
     'store.apps.StoreConfig',
