@@ -2,6 +2,7 @@ from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
 from django.conf import settings
 from django.urls import reverse
+from django.utils.text import slugify
 
 from like.models import Like
 
@@ -36,7 +37,7 @@ class Promotion(models.Model):
 class Product(models.Model):
     category = models.ManyToManyField(Category)
     title = models.CharField(max_length=255)
-    slug = models.SlugField()
+    slug = models.SlugField(allow_unicode=True)
     description = models.TextField()
     quantity = models.PositiveIntegerField()
     price = models.PositiveIntegerField()

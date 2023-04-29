@@ -9,6 +9,7 @@ from django.shortcuts import redirect
 from django.views import generic
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+import re
 
 from config import settings
 from .models import Product, Order, Profile, OrderItem, Comment, Category
@@ -182,6 +183,16 @@ class OrderView(LoginRequiredMixin, generic.ListView):
         return Order.objects.filter(profile__user=self.request.user)
 
 
+def persian_slugify(text):
+    """
+    Converts Persian text to a slug for use in URLs.
+    """
+    # text = re.sub('[^\w\s-]', '', text).strip().lower()
+    # text = re.sub('[-\s]+', '-', text)
+    text = '-'.join(text.split())
+    return text
+
+
 class ProductCreate(UserPassesTestMixin, generic.CreateView):
     model = Product
     template_name = 'store/product_add.html'
@@ -193,7 +204,7 @@ class ProductCreate(UserPassesTestMixin, generic.CreateView):
     def form_valid(self, form):
         if form.is_valid():
             product = form.save(commit=False)
-            product.slug = slugify(product.title)
+            product.slug = persian_slugify(product.title)
             product.save()
             return super().form_valid(form)
 
