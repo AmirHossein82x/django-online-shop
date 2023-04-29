@@ -10,7 +10,10 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 import os
+from datetime import timedelta
 from pathlib import Path
+
+from celery.schedules import crontab
 from environs import Env
 from django.contrib import messages
 
@@ -178,3 +181,11 @@ MESSAGE_TAGS = {
  }
 
 ADMIN_EMAIL = 'admin@gmail.com'
+CELERY_BROKER_URL = 'redis://localhost:6379/3'
+
+CELERY_BEAT_SCHEDULE = {
+    'notify_member': {
+        'task': 'store.tasks.delete_disable_comments',
+        'schedule': crontab(hour=0, minute=0),
+    }
+}
