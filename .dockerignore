@@ -1,0 +1,28 @@
+# Ignore Python bytecode files
+**/__pycache__
+*.pyc
+
+# Ignore development files and directories
+.vscode/
+.idea/
+.env
+logs/
+tmp/
+
+# Ignore database files
+*.sqlite3
+*.db
+
+# Ignore celery logs
+celerybeat.pid
+celerybeat-schedule
+
+# Ignore Redis dump.rdb file
+dump.rdb
+
+# Ignore Docker files
+.dockerignore
+Dockerfile
+docker-compose.yml
+
+venv/

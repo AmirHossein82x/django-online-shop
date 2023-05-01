@@ -33,7 +33,7 @@ SECRET_KEY = env('DJANGO_SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env('DJANGO_DEBUG')
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['0.0.0.0']
 
 
 # Application definition
@@ -98,8 +98,12 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': env("POSTGRES_DB"),
+        'USER': env("POSTGRES_USER"),
+        'PASSWORD': env("POSTGRES_PASSWORD"),
+        'HOST': env('db'),
+        'PORT': '5432',
     }
 }
 
@@ -181,7 +185,7 @@ MESSAGE_TAGS = {
  }
 
 ADMIN_EMAIL = 'admin@gmail.com'
-CELERY_BROKER_URL = 'redis://localhost:6379/3'
+CELERY_BROKER_URL = 'redis://redis:6379/0'
 
 CELERY_BEAT_SCHEDULE = {
     'notify_member': {
